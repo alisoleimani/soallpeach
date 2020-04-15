@@ -23,7 +23,7 @@ fn is_prime(primes_vec: &mut Vec<i32>, primes_set: &mut HashSet<i32> ,i: i32) ->
                 return "0";
             }
         }
-        primes_vec.push(i);
+        // primes_vec.push(i);
         primes_set.insert(i);
         "1"
     }
