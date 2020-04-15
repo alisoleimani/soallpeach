@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::env;
-use std::fs::File;
-use std::io::{self, BufRead};
+use std::fs;
+
 
 fn is_prime(primes_vec: &mut Vec<i32>, primes_set: &mut HashSet<i32> ,i: i32) -> &'static str {
     if primes_set.contains(&i)  {
@@ -34,10 +34,11 @@ fn main() {
     let mut primes_set = HashSet::<i32>::with_capacity(primes_vec.len());
     primes_set.extend(primes_vec.iter());
     let args: Vec<String> = env::args().collect();
-    let file = File::open(&args[1]).expect("!!!");
-    for line in io::BufReader::new(file).lines() {
-        if let Ok(num) = line {
-            println!("{}", is_prime(&mut primes_vec, &mut primes_set, num.parse::<i32>().expect("!!!")));
-        }
+    let f = fs::read_to_string(&args[1]).expect("!!!");
+    let mut answers = Vec::<&'static str>::with_capacity(10000000);
+    for num in f.split_whitespace() {
+        answers.push(is_prime(&mut primes_vec, &mut primes_set, num.parse::<i32>().expect("!!!")));
     }
+    print!("{}", answers.join("\n"));
 }
+ 

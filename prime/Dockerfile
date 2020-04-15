@@ -17,6 +17,6 @@ COPY src ./src
 RUN RUSTFLAGS='-C link-arg=-s' cargo install --target x86_64-unknown-linux-musl --path .
 
 # Copy the statically-linked binary into a scratch container.
-FROM scratch
+FROM busybox:musl
 COPY --from=build /usr/local/cargo/bin/prime /prime
 ENTRYPOINT ["/prime"]
