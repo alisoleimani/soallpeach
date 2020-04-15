@@ -9,7 +9,7 @@ RUN rustup target add x86_64-unknown-linux-musl
 # we can use the docker build cache and skip these (typically slow) steps.
 RUN USER=root cargo new prime
 WORKDIR /usr/src/prime
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 RUN cargo build --release
 
 # Copy the source and build the application.
