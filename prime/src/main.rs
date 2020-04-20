@@ -1,13 +1,17 @@
 use std::collections::HashSet;
 use std::env;
 use std::fs;
+use std::io::{self, Write};
 
+static mut answers: &'static mut [u8] = &mut [0; 10000000];
 
-fn is_prime(primes_vec: &mut Vec<i32>, primes_set: &mut HashSet<i32> ,i: i32) -> &'static str {
+unsafe fn is_prime(primes_vec: &mut Vec<i32>, primes_set: &mut HashSet<i32> ,i: i32, index: usize) {
     if primes_set.contains(&i)  {
-        "1"
+        answers[2*index] = 49 as u8;
+        answers[2*index+1] = '\n' as u8;
     } else if *primes_vec.last().expect("!!!!") > i {
-        "0"
+        answers[2*index] = 48 as u8;
+        answers[2*index+1] = '\n' as u8;
     } else {
         let s = (i as f32).sqrt().floor() as i32;
         for j in primes_vec.iter() {
@@ -15,17 +19,20 @@ fn is_prime(primes_vec: &mut Vec<i32>, primes_set: &mut HashSet<i32> ,i: i32) ->
                 break;
             }
             if i % *j == 0 {
-                return "0";
+                answers[2*index] = 48 as u8;
+                answers[2*index+1] = '\n' as u8;
             }
         }
         for j in *primes_vec.last().expect("!!!")+1..(s+1) {
             if i % j == 0 {
-                return "0";
+                answers[2*index] = 48 as u8;
+                answers[2*index+1] = '\n' as u8;
             }
         }
         // primes_vec.push(i);
         primes_set.insert(i);
-        "1"
+        answers[2*index] = 49 as u8;
+        answers[2*index+1] = '\n' as u8;
     }
 
 }
@@ -35,10 +42,16 @@ fn main() {
     primes_set.extend(primes_vec.iter());
     let args: Vec<String> = env::args().collect();
     let f = fs::read_to_string(&args[1]).expect("!!!");
-    let mut answers = Vec::<&'static str>::with_capacity(10000000);
-    for num in f.split_whitespace() {
-        answers.push(is_prime(&mut primes_vec, &mut primes_set, num.parse::<i32>().expect("!!!")));
+    let mut count= 0;
+    for (index, num) in f.split_whitespace().enumerate() {
+        unsafe {
+            is_prime(&mut primes_vec, &mut primes_set, num.parse::<i32>().expect("!!!"), index);
+        }
+        count = count + 1;
     }
-    print!("{}", answers.join("\n"));
+    unsafe
+    {
+        io::stdout().write_all(&answers[0..2*count-1]);
+    }
 }
  
